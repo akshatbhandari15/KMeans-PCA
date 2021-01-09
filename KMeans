@@ -1,0 +1,69 @@
+import pandas as pd
+import numpy as np
+import random
+
+from matplotlib import pyplot as plt
+
+def datasetgetNumFeatures(dataset):
+    return dataset.shape[1]
+
+def getRandomCentroids(numFeatures, k, dataset):
+    centroids = np.empty([k, numFeatures])
+    for i in range(k):
+        centroids[i, :] = dataset[random.randint(0,len(dataset)), :]
+    return centroids
+        
+def kmeans(dataset, k):
+    numFeatures = datasetgetNumFeatures(dataset)
+    centroids = getRandomCentroids(numFeatures, k, dataset)
+    
+    iterations = 0
+    oldCentroids = []
+    
+    while not shouldStop(oldCentroids, centroids, iterations):
+        oldCentroids.append(centroids)
+        iterations += 1
+        
+        labels = getLabels(dataset, centroids, k)
+        centroids = getCentroids(dataset, labels, k)
+        
+    return centroids, labels
+
+
+def shouldStop(oldCentroids, centroids, iterations):
+    if iterations > MAXITERATIONS:
+        return True
+    else:
+        return False
+
+def getLabels(dataset, centroids, k):
+    labels = []
+    for x in dataset:
+        z = []
+        for y in centroids:
+            z.append(sum((x-y)**2))
+            
+        labels.append(z.index(min(z)))
+    return np.array(labels)
+    
+def getCentroids (dataset, labels, k):
+    centroids = np.zeros([k, 8])
+    for i in range(k):
+       centroids[i] = np.mean(dataset[labels == i], axis=0)
+    
+    return centroids
+            
+dataset = pd.read_csv("Country-data.csv")
+
+dataset = dataset.drop("country", axis = 1)
+dataset = dataset.values[:, 0:8]
+MAXITERATIONS = 400
+k = 3
+print(kmeans(dataset, k))
+mean = np.mean(dataset, axis = 0)
+std = np.std(dataset, axis = 0)
+centers = np.random.randn(3,8)*std + mean
+
+colors=['orange', 'blue', 'green']
+for i in range(167):
+    plt.scatter(dataset[i, 0], dataset[i,1], s=7)
