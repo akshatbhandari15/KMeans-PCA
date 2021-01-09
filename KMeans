@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Jan  9 12:34:47 2021
+
+@author: anant
+"""
+
 import pandas as pd
 import numpy as np
 import random
@@ -27,7 +34,7 @@ def kmeans(dataset, k):
         labels = getLabels(dataset, centroids, k)
         centroids = getCentroids(dataset, labels, k)
         
-    return centroids, labels
+    return centroids
 
 
 def shouldStop(oldCentroids, centroids, iterations):
@@ -59,11 +66,10 @@ dataset = dataset.drop("country", axis = 1)
 dataset = dataset.values[:, 0:8]
 MAXITERATIONS = 400
 k = 3
-print(kmeans(dataset, k))
-mean = np.mean(dataset, axis = 0)
-std = np.std(dataset, axis = 0)
-centers = np.random.randn(3,8)*std + mean
+centroids = kmeans(dataset, k)
+print(centroids)
 
 colors=['orange', 'blue', 'green']
-for i in range(167):
+for i in range(166):
     plt.scatter(dataset[i, 0], dataset[i,1], s=7)
+plt.scatter(centroids[:,0], centroids[:,1], marker='*', c='g', s=150)
